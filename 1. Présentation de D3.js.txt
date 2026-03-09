@@ -1,0 +1,39 @@
+1. Présentation de D3.js
+
+    Définition : Une bibliothèque JavaScript permettant de lier des données au DOM (Document Object Model) et d'appliquer des transformations basées sur ces données.
+
+    Format de prédilection : Principalement utilisée pour générer du SVG (Scalable Vector Graphics), un format d'image vectorielle zoomable sans perte de qualité.
+
+    Installation : Peut être invoquée via un lien CDN (comme cdnjs) dans la balise <script> d'un fichier HTML.
+
+2. Manipulation du DOM
+
+D3 utilise des sélecteurs similaires au CSS pour manipuler les éléments de la page:
+
+    Sélection : d3.select() pour le premier élément correspondant et d3.selectAll() pour tous les éléments d'un type, d'une classe ou d'un identifiant.
+
+    Modification : Les fonctions .style() (CSS), .html() (contenu) et .attr() (attributs) permettent de transformer les éléments sélectionnés.
+
+    Ajout/Suppression : .append() ajoute un élément à la fin, .insert() au début, et .remove() supprime un élément.
+
+3. Liaison de données (Data Binding)
+
+C'est le cœur de la bibliothèque. La fonction .data() lie un tableau de données à une sélection d'éléments. D3 gère les différences de taille entre les données et les éléments existants via :
+
+    .enter() : Gère les données supplémentaires pour lesquelles il n'y a pas encore d'éléments (permet de créer de nouvelles balises).
+
+    .exit() : Gère les éléments en trop par rapport au nombre de données (permet de les supprimer).
+
+4. Échelles (Scales)
+
+Les échelles font le pont entre les valeurs des données (le domain) et l'espace d'affichage (le range):
+
+    Quantitatives : d3.scaleLinear() pour des transformations linéaires (ex: transformer -1000/1000 en 0/100 pixels ou en dégradé de couleurs).
+
+    Qualitatives : d3.scaleBand() pour répartir des modalités sur un axe ou d3.scaleOrdinal() pour associer des catégories à des couleurs prédéfinies.
+
+5. Interactivité et Données Externes
+
+    Événements : La fonction .on() permet de gérer l'interactivité (ex: mouseover, mouseout). On accède à l'élément survolé via le mot-clé this.
+
+    Chargement : D3 propose des fonctions pour lire des fichiers externes tels que d3.csv() ou d3.json().

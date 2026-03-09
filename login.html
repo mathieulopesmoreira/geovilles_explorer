@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoVilles Explorer — Connexion</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <script>
+        (function () {
+            var mode = localStorage.getItem('theme-preference') || 'system';
+            var root = document.documentElement;
+            root.classList.remove('theme-light', 'theme-dark');
+            if (mode === 'light') root.classList.add('theme-light');
+            if (mode === 'dark') root.classList.add('theme-dark');
+        })();
+    </script>
+
+    <style>
+        /* ===== LOGIN PAGE ===== */
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: auto;
+            background: var(--bg-0);
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 24px;
+        }
+
+        .login-card {
+            background: var(--bg-1);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 40px 32px;
+            text-align: center;
+        }
+
+        .login-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .login-brand h1 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        .login-subtitle {
+            font-size: 0.8125rem;
+            color: var(--text-3);
+            margin: 8px 0 28px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-2);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 44px;
+            padding: 0 14px;
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-sans);
+            font-size: 14px;
+            color: var(--text-0);
+            outline: none;
+            transition: border-color .2s ease, box-shadow .2s ease;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent-border);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-3);
+        }
+
+        .btn-primary {
+            width: 100%;
+            height: 44px;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--couleur-v1), #a855f7);
+            color: #fff;
+            font-family: var(--font-sans);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity .15s ease, transform .1s ease;
+            margin-top: 8px;
+        }
+
+        .btn-primary:hover {
+            opacity: .9;
+        }
+
+        .btn-primary:active {
+            transform: scale(.98);
+        }
+
+        .btn-primary:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .toggle-mode {
+            margin-top: 20px;
+            font-size: 0.8125rem;
+            color: var(--text-3);
+        }
+
+        .toggle-mode a {
+            color: var(--accent);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .toggle-mode a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8125rem;
+            margin-bottom: 16px;
+            text-align: left;
+            display: none;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, .1);
+            border: 1px solid rgba(239, 68, 68, .25);
+            color: #fca5a5;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, .1);
+            border: 1px solid rgba(34, 197, 94, .25);
+            color: #86efac;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            color: var(--text-3);
+            font-size: 0.75rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .login-footer {
+            margin-top: 28px;
+            font-size: 11px;
+            color: var(--text-3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-card">
+
+            <div class="login-brand">
+                <h1>GeoVilles Explorer</h1>
+            </div>
+            <p class="login-subtitle">Connectez-vous pour explorer les villes françaises</p>
+
+            <div class="theme-select login-theme">
+                <label class="theme-label" for="theme-select">Theme</label>
+                <select id="theme-select" aria-label="Theme">
+                    <option value="system">Systeme</option>
+                    <option value="dark">Dark</option>
+                    <option value="light">White</option>
+                </select>
+            </div>
+
+            <div id="alert-error" class="alert alert-error"></div>
+            <div id="alert-success" class="alert alert-success"></div>
+
+            <!-- Login Form -->
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Adresse email</label>
+                    <input type="email" id="email" placeholder="votre@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" placeholder="••••••••" required minlength="6">
+                </div>
+                <button type="submit" class="btn-primary" id="btn-submit">Se connecter</button>
+            </form>
+
+            <p class="toggle-mode" id="toggle-mode">
+                Pas encore de compte ? <a id="toggle-link">Créer un compte</a>
+            </p>
+
+            <div class="login-footer">
+                <p>BUT Science des Données · Semestre 4</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Auth locale -->
+    <script src="auth.js"></script>
+    <script>
+        (function () {
+            var select = document.getElementById('theme-select');
+            if (!select) return;
+
+            var root = document.documentElement;
+            var stored = localStorage.getItem('theme-preference') || 'system';
+            select.value = stored;
+
+            function applyTheme(mode) {
+                root.classList.remove('theme-light', 'theme-dark');
+                if (mode === 'light') root.classList.add('theme-light');
+                if (mode === 'dark') root.classList.add('theme-dark');
+            }
+
+            applyTheme(stored);
+            select.addEventListener('change', function () {
+                var mode = select.value;
+                localStorage.setItem('theme-preference', mode);
+                applyTheme(mode);
+            });
+        })();
+    </script>
+</body>
+
+</html>

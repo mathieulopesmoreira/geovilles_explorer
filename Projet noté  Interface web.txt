@@ -1,0 +1,34 @@
+Projet noté : Interface web
+L’objectif de ce projet est de vous challenger entre groupe afin de réaliser une interface web (Plotly,
+D3.js ou streamlit) contenant un tableau de bord avec plusieurs pages ou onglets contenant de
+multiples indicateurs. Cette interface permettra la sélection et la comparaison de 2 villes françaises
+sur différents aspects (nom de l’application à définir).
+Voici quelques consignes et contraintes à respecter :
+- Se limiter aux villes françaises de plus 20 000 habitants ;
+- Sources de données à trouver : fichiers à télécharger (INSEE, Open data, …), API
+(Wikipedia, Pôle Emploi, …), autres ;
+- Données obligatoires : Données générales, Emploi, Logement, Météo (climat à l’année +
+météo des prochains jours) ;
+- Données complémentaires (liste non exhaustive) : Culture, Tourisme, Formation, Sports,
+Activité sur réseaux sociaux, …
+- Indicateur obligatoire : Cartographie des villes françaises de plus de 20 000 habitants
+Evaluation :
+- QCM sur Updago lundi 16 mars 9h en rapport avec le cours (javascript, plotly, d3.js,
+streamlit) et le code de votre livrable !
+- Livrable au plus tard en dépôt sur Updago pour le vendredi 13 mars 2026 23h59 dernier
+délai. Archive compressée avec fichiers html, css, js, …
+La notation sur ce livrable sera « validé » ou « non validé ». Les tests des fonctionnalités
+attendues du livrable permettront de statuer sur sa validité. Un livrable évalué à « non
+validé » entrainera une pénalisation sur la note du QCM !
+Exemple de pénalisation : Respect d’une fonctionnalité attendue (absente ou non
+fonctionnelle), arborescence de l’archive non professionnelle, code répétitif ou mort ou
+non optimisé, code non commenté, pas de notice d’installation précisée (readme).
+- Bonus +2 points à tous sur note QCM si vous remportez le challenge contre l’autre groupe
+sur la même technologie.
+Groupes :
+- Plotly 1 :
+- Plotly 2 :
+- D3.js 1 :
+- D3.js 2 :
+- Streamlit 1 :
+- Streamlit 2 :
