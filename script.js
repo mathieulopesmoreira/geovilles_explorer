@@ -2126,454 +2126,55 @@ d3.queue()
         // 26. NOUVELLES SECTIONS (DEMOGRAPHIE, EDUCATION, TRANSPORTS, QUALITE)
         // =============================================================
 
-        // ---- Générateurs de données déterministes ----
-
-        function genererDonneesDemographie(ville) {
-            var h = hashCode(ville.COM);
-            var pop = ville.PMUN;
-            var densite = Math.round(pop / (5 + h % 150));
-            var ageGrp = [
-                { label: "0–14 ans",  pct: Math.round((15 + h % 7)  * 10) / 10 },
-                { label: "15–29 ans", pct: Math.round((17 + h % 8)  * 10) / 10 },
-                { label: "30–44 ans", pct: Math.round((19 + h % 6)  * 10) / 10 },
-                { label: "45–59 ans", pct: Math.round((20 + h % 5)  * 10) / 10 },
-                { label: "60–74 ans", pct: Math.round((14 + h % 6)  * 10) / 10 },
-                { label: "75 ans +",  pct: Math.round((8  + h % 4)  * 10) / 10 }
-            ];
-            var sum = ageGrp.reduce(function(a, b) { return a + b.pct; }, 0);
-            ageGrp[2].pct = Math.max(1, Math.round((ageGrp[2].pct + (100 - sum)) * 10) / 10);
-            var croissance = Math.round(((h % 16) - 6) * 10) / 10;
-            var ageMed = Math.round((36 + (h % 14)) * 10) / 10;
-            var pctMoins30 = Math.round((ageGrp[0].pct + ageGrp[1].pct) * 10) / 10;
-            var pctPlus60  = Math.round((ageGrp[4].pct + ageGrp[5].pct) * 10) / 10;
-            var evolution = [];
-            var base = pop;
-            for (var yr = 2013; yr <= 2023; yr++) {
-                base = Math.round(base * (1 + ((h * yr) % 30 - 12) / 1000));
-                evolution.push({ annee: String(yr), pop: base });
-            }
-            return { densite: densite, ageMed: ageMed, croissance: croissance,
-                     pctMoins30: pctMoins30, pctPlus60: pctPlus60,
-                     ageGrp: ageGrp, evolution: evolution };
-        }
-
-        function genererDonneesEducation(ville) {
-            var h = hashCode(ville.COM);
-            var pop = ville.PMUN;
-            var sup    = pop > 100000 ? 35 + h % 20 : 22 + h % 18;
-            var bac    = 15 + h % 10;
-            var cap    = 20 + h % 10;
-            var brevet = 10 + h % 8;
-            var sans   = Math.max(1, 100 - sup - bac - cap - brevet);
-            var scolarisation  = Math.round((88 + h % 10) * 10) / 10;
-            var etablissements = Math.round(pop / 3500 + 2 + h % 12);
-            var lycees         = Math.max(1, Math.round(pop / 30000 + h % 4));
-            var universite     = pop > 50000 ? 1 + h % 3 : 0;
-            return {
-                scolarisation: scolarisation, etablissements: etablissements,
-                lycees: lycees, universite: universite,
-                pctSup: Math.round(sup * 10) / 10,
-                diplomes: [
-                    { nom: "BAC+3 et +",   pct: Math.round(sup    * 10) / 10 },
-                    { nom: "BAC / BAC+2",  pct: Math.round(bac    * 10) / 10 },
-                    { nom: "CAP / BEP",    pct: Math.round(cap    * 10) / 10 },
-                    { nom: "Brevet",       pct: Math.round(brevet * 10) / 10 },
-                    { nom: "Sans diplôme", pct: Math.round(sans   * 10) / 10 }
-                ]
-            };
-        }
-
-        function genererDonneesTransports(ville) {
-            var h = hashCode(ville.COM);
-            var pop = ville.PMUN;
-            var voiture = pop > 200000 ? 40 + h % 20 : 60 + h % 20;
-            var tc      = pop > 200000 ? 25 + h % 15 : 10 + h % 15;
-            var velo    = 3 + h % 9;
-            var marche  = 8 + h % 10;
-            var autres  = Math.max(1, 100 - voiture - tc - velo - marche);
-            var scoreTGV  = Math.round((40 + h % 60) * 10) / 10;
-            var scoreTC   = Math.round((30 + h % 60) * 10) / 10;
-            var scoreVelo = Math.round((20 + h % 60) * 10) / 10;
-            var tempsMoyenTrajet = 20 + h % 25;
-            return {
-                tempsMoyenTrajet: tempsMoyenTrajet,
-                scoreTGV: scoreTGV, scoreTC: scoreTC, scoreVelo: scoreVelo,
-                modes: [
-                    { nom: "Voiture",            pct: Math.round(voiture * 10) / 10 },
-                    { nom: "Transports en comm.", pct: Math.round(tc      * 10) / 10 },
-                    { nom: "Vélo / trottinette", pct: Math.round(velo    * 10) / 10 },
-                    { nom: "À pied",             pct: Math.round(marche  * 10) / 10 },
-                    { nom: "Autres",             pct: Math.round(autres  * 10) / 10 }
-                ]
-            };
-        }
-
-        function genererDonneesQualite(ville) {
-            var h = hashCode(ville.COM);
-            var qualiteAir   = 40 + h % 55;
-            var espacesVerts = Math.round((8  + h % 30) * 10) / 10;
-            var medecins     = Math.round((6  + h % 8)  * 10) / 10;
-            var delinquance  = Math.round((15 + h % 30) * 10) / 10;
-            var culture      = Math.round((40 + h % 55) * 10) / 10;
-            var sport        = Math.round((30 + h % 65) * 10) / 10;
-            return {
-                qualiteAir: qualiteAir, espacesVerts: espacesVerts,
-                medecins: medecins, delinquance: delinquance,
-                culture: culture, sport: sport,
-                axes: [
-                    { label: "Qualité air",  score: qualiteAir },
-                    { label: "Espaces verts",score: Math.min(100, Math.round(espacesVerts * 3)) },
-                    { label: "Santé",        score: Math.min(100, Math.round(medecins * 9)) },
-                    { label: "Sécurité",     score: Math.max(10, 100 - Math.round(delinquance)) },
-                    { label: "Culture",      score: Math.round(culture) },
-                    { label: "Sport",        score: Math.round(sport) }
-                ]
-            };
-        }
-
-        // ---- Fonctions de mise à jour ----
-
         function mettreAJourDemographie() {
             var v1 = selection[0], v2 = selection[1];
             if (!v1 || !v2) return;
-            var d1 = genererDonneesDemographie(v1);
-            var d2 = genererDonneesDemographie(v2);
-            var nom1 = v1[colCommune], nom2 = v2[colCommune];
-
             d3.select("#demographie-placeholder").style("display", "none");
             d3.select("#demographie-pyramide-section").style("display", "block");
             d3.select("#demographie-evolution-section").style("display", "block");
-            d3.select("#demographie-tableau-section").style("display", "block");
 
-            // KPI
-            afficherKPI(d3.select("#demographie-kpi"), [
-                { icon: "👤", label: "Densité (hab/km²)",     val1: fmt(d1.densite),    val2: fmt(d2.densite) },
-                { icon: "📅", label: "Âge médian",             val1: d1.ageMed + " ans", val2: d2.ageMed + " ans" },
-                { icon: "🧒", label: "Part des – de 30 ans",  val1: d1.pctMoins30 + " %", val2: d2.pctMoins30 + " %" },
-                { icon: "🧓", label: "Part des + de 60 ans",  val1: d1.pctPlus60  + " %", val2: d2.pctPlus60  + " %" }
-            ], nom1, nom2);
+            var div = d3.select("#demographie-pyramide");
+            div.selectAll("*").remove();
+            div.html("<p><i>Pyramide des âges (Simulation)</i> : " + v1[colCommune] + " a généralement une population " + (hashCode(v1[colCommune]) % 2 === 0 ? "plus jeune" : "plus âgée") + " que " + v2[colCommune] + ".</p>");
 
-            // --- Pyramide des âges (barres horizontales groupées) ---
-            var pDiv = d3.select("#demographie-pyramide");
-            pDiv.selectAll("*").remove();
-            var pm = { top: 30, right: 30, bottom: 40, left: 110 };
-            var pw = 900 - pm.left - pm.right, ph = 300 - pm.top - pm.bottom;
-
-            var svgP = pDiv.append("svg")
-                .attr("width", pw + pm.left + pm.right)
-                .attr("height", ph + pm.top + pm.bottom)
-                .append("g").attr("transform", "translate(" + pm.left + "," + pm.top + ")");
-
-            var yP = d3.scaleBand()
-                .domain(d1.ageGrp.map(function(d) { return d.label; }))
-                .range([0, ph]).padding(0.3);
-            var xP = d3.scaleLinear()
-                .domain([0, d3.max(d1.ageGrp.concat(d2.ageGrp), function(d) { return d.pct; }) * 1.2])
-                .range([0, pw]);
-
-            svgP.append("g").attr("class", "axis").call(d3.axisLeft(yP));
-            svgP.append("g").attr("class", "axis")
-                .attr("transform", "translate(0," + ph + ")")
-                .call(d3.axisBottom(xP).ticks(5).tickFormat(function(d) { return d + "%"; }));
-
-            // Légende
-            svgP.append("circle").attr("cx", pw / 2 - 100).attr("cy", -15).attr("r", 5).style("fill", COULEUR_V1);
-            svgP.append("text").attr("x", pw / 2 - 90).attr("y", -11).style("fill", "var(--text-0)").style("font-size", "12px").text(nom1);
-            svgP.append("circle").attr("cx", pw / 2 + 40).attr("cy", -15).attr("r", 5).style("fill", COULEUR_V2);
-            svgP.append("text").attr("x", pw / 2 + 50).attr("y", -11).style("fill", "var(--text-0)").style("font-size", "12px").text(nom2);
-
-            // Barres ville 1
-            svgP.selectAll(".bar-pyr-v1")
-                .data(d1.ageGrp).enter().append("rect")
-                .attr("class", "chart-interactive bar-pyr-v1")
-                .attr("y", function(d) { return yP(d.label); })
-                .attr("height", yP.bandwidth() / 2 - 1)
-                .attr("x", 0).attr("width", 0).attr("rx", 3)
-                .style("fill", COULEUR_V1).style("opacity", 0.85)
-                .on("mouseover", function(d) { if (tooltipPinned) return; tooltip.classed("visible", true).html("<strong>" + nom1 + "</strong><br>" + d.label + " : " + d.pct + "%").style("left", (d3.event.clientX + 15) + "px").style("top", (d3.event.clientY - 10) + "px"); })
-                .on("mouseout",  function()  { if (tooltipPinned) return; tooltip.classed("visible", false); })
-                .on("click", function(d) { d3.event.stopPropagation(); if (d3.select(this).classed("chart-selected")) { clearPinnedTooltip(); return; } applyChartSelection(this); showPinnedTooltip("<strong>" + nom1 + "</strong><br>" + d.label + " : " + d.pct + "%", d3.event.clientX, d3.event.clientY); })
-                .transition().duration(600)
-                .attr("width", function(d) { return xP(d.pct); });
-
-            // Barres ville 2
-            svgP.selectAll(".bar-pyr-v2")
-                .data(d2.ageGrp).enter().append("rect")
-                .attr("class", "chart-interactive bar-pyr-v2")
-                .attr("y", function(d) { return yP(d.label) + yP.bandwidth() / 2 + 1; })
-                .attr("height", yP.bandwidth() / 2 - 1)
-                .attr("x", 0).attr("width", 0).attr("rx", 3)
-                .style("fill", COULEUR_V2).style("opacity", 0.85)
-                .on("mouseover", function(d) { if (tooltipPinned) return; tooltip.classed("visible", true).html("<strong>" + nom2 + "</strong><br>" + d.label + " : " + d.pct + "%").style("left", (d3.event.clientX + 15) + "px").style("top", (d3.event.clientY - 10) + "px"); })
-                .on("mouseout",  function()  { if (tooltipPinned) return; tooltip.classed("visible", false); })
-                .on("click", function(d) { d3.event.stopPropagation(); if (d3.select(this).classed("chart-selected")) { clearPinnedTooltip(); return; } applyChartSelection(this); showPinnedTooltip("<strong>" + nom2 + "</strong><br>" + d.label + " : " + d.pct + "%", d3.event.clientX, d3.event.clientY); })
-                .transition().duration(600)
-                .attr("width", function(d) { return xP(d.pct); });
-
-            // --- Courbe d'évolution de population ---
-            var eDiv = d3.select("#demographie-evolution");
-            eDiv.selectAll("*").remove();
-            var em = { top: 30, right: 30, bottom: 40, left: 80 };
-            var ew = 900 - em.left - em.right, eh = 260 - em.top - em.bottom;
-
-            var svgE = eDiv.append("svg")
-                .attr("width", ew + em.left + em.right)
-                .attr("height", eh + em.top + em.bottom)
-                .append("g").attr("transform", "translate(" + em.left + "," + em.top + ")");
-
-            var xE = d3.scalePoint()
-                .domain(d1.evolution.map(function(d) { return d.annee; }))
-                .range([0, ew]);
-            var allPop = d1.evolution.map(function(d) { return d.pop; }).concat(d2.evolution.map(function(d) { return d.pop; }));
-            var yE = d3.scaleLinear()
-                .domain([d3.min(allPop) * 0.95, d3.max(allPop) * 1.05])
-                .range([eh, 0]);
-
-            svgE.append("g").attr("class", "axis").attr("transform", "translate(0," + eh + ")")
-                .call(d3.axisBottom(xE).tickValues(d1.evolution.filter(function(d, i) { return i % 2 === 0; }).map(function(d) { return d.annee; })));
-            svgE.append("g").attr("class", "axis")
-                .call(d3.axisLeft(yE).ticks(5).tickFormat(function(d) { return (d / 1000).toFixed(0) + "k"; }));
-
-            // Légende
-            svgE.append("circle").attr("cx", ew / 2 - 100).attr("cy", -15).attr("r", 5).style("fill", COULEUR_V1);
-            svgE.append("text").attr("x", ew / 2 - 90).attr("y", -11).style("fill", "var(--text-0)").style("font-size", "12px").text(nom1);
-            svgE.append("circle").attr("cx", ew / 2 + 40).attr("cy", -15).attr("r", 5).style("fill", COULEUR_V2);
-            svgE.append("text").attr("x", ew / 2 + 50).attr("y", -11).style("fill", "var(--text-0)").style("font-size", "12px").text(nom2);
-
-            var lineGen = d3.line().x(function(d) { return xE(d.annee); }).y(function(d) { return yE(d.pop); }).curve(d3.curveCatmullRom);
-            svgE.append("path").datum(d1.evolution).attr("fill", "none").attr("stroke", COULEUR_V1).attr("stroke-width", 2.5).attr("d", lineGen);
-            svgE.append("path").datum(d2.evolution).attr("fill", "none").attr("stroke", COULEUR_V2).attr("stroke-width", 2.5).attr("d", lineGen);
-
-            svgE.selectAll(".dot-ev1").data(d1.evolution).enter().append("circle")
-                .attr("class", "chart-interactive dot-ev1")
-                .attr("cx", function(d) { return xE(d.annee); }).attr("cy", function(d) { return yE(d.pop); }).attr("r", 4)
-                .style("fill", COULEUR_V1)
-                .on("mouseover", function(d) { if (tooltipPinned) return; tooltip.classed("visible", true).html("<strong>" + nom1 + "</strong><br>" + d.annee + " : " + fmt(d.pop) + " hab.").style("left", (d3.event.clientX + 15) + "px").style("top", (d3.event.clientY - 10) + "px"); })
-                .on("mouseout",  function()  { if (tooltipPinned) return; tooltip.classed("visible", false); })
-                .on("click", function(d) { d3.event.stopPropagation(); if (d3.select(this).classed("chart-selected")) { clearPinnedTooltip(); return; } applyChartSelection(this); showPinnedTooltip("<strong>" + nom1 + "</strong><br>" + d.annee + " : " + fmt(d.pop) + " hab.", d3.event.clientX, d3.event.clientY); });
-
-            svgE.selectAll(".dot-ev2").data(d2.evolution).enter().append("circle")
-                .attr("class", "chart-interactive dot-ev2")
-                .attr("cx", function(d) { return xE(d.annee); }).attr("cy", function(d) { return yE(d.pop); }).attr("r", 4)
-                .style("fill", COULEUR_V2)
-                .on("mouseover", function(d) { if (tooltipPinned) return; tooltip.classed("visible", true).html("<strong>" + nom2 + "</strong><br>" + d.annee + " : " + fmt(d.pop) + " hab.").style("left", (d3.event.clientX + 15) + "px").style("top", (d3.event.clientY - 10) + "px"); })
-                .on("mouseout",  function()  { if (tooltipPinned) return; tooltip.classed("visible", false); })
-                .on("click", function(d) { d3.event.stopPropagation(); if (d3.select(this).classed("chart-selected")) { clearPinnedTooltip(); return; } applyChartSelection(this); showPinnedTooltip("<strong>" + nom2 + "</strong><br>" + d.annee + " : " + fmt(d.pop) + " hab.", d3.event.clientX, d3.event.clientY); });
-
-            // --- Tableau comparatif ---
-            var tDiv = d3.select("#demographie-tableau");
-            tDiv.selectAll("*").remove();
-            var lignes = [
-                ["Population totale",           fmt(v1.PMUN) + " hab.",                             fmt(v2.PMUN) + " hab."],
-                ["Densité",                      fmt(d1.densite) + " hab/km²",                       fmt(d2.densite) + " hab/km²"],
-                ["Âge médian",                  d1.ageMed + " ans",                                  d2.ageMed + " ans"],
-                ["Part des – 30 ans",            d1.pctMoins30 + " %",                               d2.pctMoins30 + " %"],
-                ["Part des + 60 ans",            d1.pctPlus60  + " %",                               d2.pctPlus60  + " %"],
-                ["Croissance estimée (10 ans)", (d1.croissance >= 0 ? "+" : "") + d1.croissance + " %", (d2.croissance >= 0 ? "+" : "") + d2.croissance + " %"]
-            ];
-            var tbl = tDiv.append("table").attr("class", "data-table").style("width", "100%");
-            var thead = tbl.append("thead").append("tr");
-            thead.append("th").text("Indicateur");
-            thead.append("th").html('<span style="color:' + COULEUR_V1 + '">⬤</span> ' + nom1);
-            thead.append("th").html('<span style="color:' + COULEUR_V2 + '">⬤</span> ' + nom2);
-            var tbody = tbl.append("tbody");
-            lignes.forEach(function(r) {
-                var tr = tbody.append("tr");
-                r.forEach(function(c) { tr.append("td").text(c); });
-            });
+            var ev = d3.select("#demographie-evolution");
+            ev.selectAll("*").remove();
+            ev.html("<p>Croissance estimée sur 10 ans : <br>" + v1[colCommune] + " : <strong>" + (hashCode(v1[colCommune]) % 10 - 5) + "%</strong><br>" + v2[colCommune] + " : <strong>" + (hashCode(v2[colCommune]) % 10 - 5) + "%</strong></p>");
         }
 
         function mettreAJourEducation() {
             var v1 = selection[0], v2 = selection[1];
             if (!v1 || !v2) return;
-            var e1 = genererDonneesEducation(v1);
-            var e2 = genererDonneesEducation(v2);
-            var nom1 = v1[colCommune], nom2 = v2[colCommune];
-
             d3.select("#education-placeholder").style("display", "none");
             d3.select("#education-diplomes-section").style("display", "block");
-            d3.select("#education-bar-section").style("display", "block");
 
-            afficherKPI(d3.select("#education-kpi"), [
-                { icon: "🎓", label: "Part enseignement supérieur", val1: e1.pctSup + " %",       val2: e2.pctSup + " %" },
-                { icon: "📚", label: "Taux de scolarisation",       val1: e1.scolarisation + " %", val2: e2.scolarisation + " %" },
-                { icon: "🏫", label: "Établissements scolaires",    val1: fmt(e1.etablissements),  val2: fmt(e2.etablissements) },
-                { icon: "🏛️", label: "Sites universitaires",        val1: e1.universite === 0 ? "Aucun" : String(e1.universite), val2: e2.universite === 0 ? "Aucun" : String(e2.universite) }
-            ], nom1, nom2);
-
-            // Donuts répartition des diplômes
-            var diplDiv = d3.select("#education-diplomes");
-            diplDiv.selectAll("*").remove();
-            dessinerDonut(diplDiv.append("div"), e1.diplomes, 450, 320, nom1);
-            dessinerDonut(diplDiv.append("div"), e2.diplomes, 450, 320, nom2);
-
-            // Bar chart comparatif indicateurs éducatifs
-            dessinerBarChartComparatif(
-                d3.select("#education-bar"),
-                [
-                    { label: "Supérieur (%)",    v1: e1.pctSup,         v2: e2.pctSup },
-                    { label: "Scolarisation (%)", v1: e1.scolarisation,  v2: e2.scolarisation },
-                    { label: "Établissements",    v1: e1.etablissements, v2: e2.etablissements },
-                    { label: "Lycées",            v1: e1.lycees,         v2: e2.lycees }
-                ],
-                nom1, nom2
-            );
+            var div = d3.select("#education-diplomes");
+            div.selectAll("*").remove();
+            div.html("<p>Taux de scolarisation simulé : <br>" + v1[colCommune] + " : " + (70 + (hashCode(v1[colCommune]) % 20)) + "%<br>" + v2[colCommune] + " : " + (70 + (hashCode(v2[colCommune]) % 20)) + "%</p>");
         }
 
         function mettreAJourTransports() {
             var v1 = selection[0], v2 = selection[1];
             if (!v1 || !v2) return;
-            var t1 = genererDonneesTransports(v1);
-            var t2 = genererDonneesTransports(v2);
-            var nom1 = v1[colCommune], nom2 = v2[colCommune];
-
             d3.select("#transports-placeholder").style("display", "none");
             d3.select("#transports-modes-section").style("display", "block");
-            d3.select("#transports-bar-section").style("display", "block");
 
-            afficherKPI(d3.select("#transports-kpi"), [
-                { icon: "🚗", label: "Usage voiture (%)",        val1: t1.modes[0].pct + " %",     val2: t2.modes[0].pct + " %" },
-                { icon: "🚌", label: "Transports en comm. (%)",  val1: t1.modes[1].pct + " %",     val2: t2.modes[1].pct + " %" },
-                { icon: "⏱️", label: "Trajet moyen (min)",       val1: t1.tempsMoyenTrajet + " min", val2: t2.tempsMoyenTrajet + " min" },
-                { icon: "🚅", label: "Score accès TGV / Train",  val1: t1.scoreTGV + " /100",      val2: t2.scoreTGV + " /100" }
-            ], nom1, nom2);
-
-            // Donuts modes de déplacement
-            var modesDiv = d3.select("#transports-modes");
-            modesDiv.selectAll("*").remove();
-            dessinerDonut(modesDiv.append("div"), t1.modes, 450, 320, nom1);
-            dessinerDonut(modesDiv.append("div"), t2.modes, 450, 320, nom2);
-
-            // Bar chart scores d'accessibilité
-            dessinerBarChartComparatif(
-                d3.select("#transports-bar"),
-                [
-                    { label: "Score TGV",   v1: t1.scoreTGV,  v2: t2.scoreTGV },
-                    { label: "Score TC",    v1: t1.scoreTC,   v2: t2.scoreTC },
-                    { label: "Score Vélo",  v1: t1.scoreVelo, v2: t2.scoreVelo }
-                ],
-                nom1, nom2
-            );
+            var div = d3.select("#transports-modes");
+            div.selectAll("*").remove();
+            var m1 = hashCode(v1[colCommune]) % 30;
+            var m2 = hashCode(v2[colCommune]) % 30;
+            div.html("<p>Utilisation des transports en commun : <br>" + v1[colCommune] + " : " + m1 + "%<br>" + v2[colCommune] + " : " + m2 + "%</p>");
         }
 
         function mettreAJourQualite() {
             var v1 = selection[0], v2 = selection[1];
             if (!v1 || !v2) return;
-            var q1 = genererDonneesQualite(v1);
-            var q2 = genererDonneesQualite(v2);
-            var nom1 = v1[colCommune], nom2 = v2[colCommune];
-
             d3.select("#qualite-placeholder").style("display", "none");
             d3.select("#qualite-radar-section").style("display", "block");
-            d3.select("#qualite-bar-section").style("display", "block");
 
-            afficherKPI(d3.select("#qualite-kpi"), [
-                { icon: "🌬️", label: "Qualité de l'air (0–100)",   val1: q1.qualiteAir + " /100",   val2: q2.qualiteAir + " /100" },
-                { icon: "🌳", label: "Espaces verts (m²/hab)",     val1: q1.espacesVerts + " m²",   val2: q2.espacesVerts + " m²" },
-                { icon: "⚕️",  label: "Médecins (/ 1 000 hab)",    val1: String(q1.medecins),        val2: String(q2.medecins) },
-                { icon: "🛡️", label: "Indice délinquance (/100)",  val1: String(q1.delinquance),     val2: String(q2.delinquance) }
-            ], nom1, nom2);
-
-            // --- Radar chart toile d'araignée ---
-            var rDiv = d3.select("#qualite-radar");
-            rDiv.selectAll("*").remove();
-
-            var W = 900, H = 420;
-            var cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 70;
-            var axes = q1.axes;
-            var n = axes.length;
-            var angleSlice = Math.PI * 2 / n;
-            var rMax = 100;
-            var rScale = d3.scaleLinear().domain([0, rMax]).range([0, R]);
-
-            var svgR = rDiv.append("svg").attr("width", W).attr("height", H);
-            var g = svgR.append("g").attr("transform", "translate(" + cx + "," + cy + ")");
-
-            // Grilles concentriques
-            var levels = 5;
-            for (var lv = 1; lv <= levels; lv++) {
-                var rLv = R * lv / levels;
-                g.append("circle").attr("cx", 0).attr("cy", 0).attr("r", rLv)
-                    .style("fill", "none").style("stroke", "var(--border)").style("stroke-width", "0.8").style("opacity", "0.6");
-                if (lv < levels) {
-                    g.append("text").attr("x", 4).attr("y", -rLv + 4)
-                        .style("fill", "var(--text-2)").style("font-size", "9px")
-                        .text(Math.round(rMax * lv / levels));
-                }
-            }
-
-            // Axes radiaux + étiquettes
-            axes.forEach(function(ax, i) {
-                var angle = angleSlice * i - Math.PI / 2;
-                var xEnd = R * Math.cos(angle);
-                var yEnd = R * Math.sin(angle);
-                g.append("line").attr("x1", 0).attr("y1", 0).attr("x2", xEnd).attr("y2", yEnd)
-                    .style("stroke", "var(--border)").style("stroke-width", "1");
-                var labelR = R + 24;
-                g.append("text")
-                    .attr("x", labelR * Math.cos(angle))
-                    .attr("y", labelR * Math.sin(angle))
-                    .attr("text-anchor", "middle").attr("dominant-baseline", "middle")
-                    .style("fill", "var(--text-1)").style("font-size", "11px")
-                    .text(ax.label);
-            });
-
-            function toPolygon(donnees) {
-                return donnees.map(function(d, i) {
-                    var angle = angleSlice * i - Math.PI / 2;
-                    return [rScale(d.score) * Math.cos(angle), rScale(d.score) * Math.sin(angle)];
-                });
-            }
-
-            function coordsPath(coords) {
-                return coords.map(function(c, i) { return (i === 0 ? "M" : "L") + c[0] + "," + c[1]; }).join(" ") + " Z";
-            }
-
-            var coords1 = toPolygon(q1.axes);
-            var coords2 = toPolygon(q2.axes);
-
-            g.append("path").attr("d", coordsPath(coords1))
-                .style("fill", COULEUR_V1).style("fill-opacity", "0.25")
-                .style("stroke", COULEUR_V1).style("stroke-width", "2");
-            g.append("path").attr("d", coordsPath(coords2))
-                .style("fill", COULEUR_V2).style("fill-opacity", "0.25")
-                .style("stroke", COULEUR_V2).style("stroke-width", "2");
-
-            // Points interactifs ville 1
-            coords1.forEach(function(c, i) {
-                g.append("circle").attr("cx", c[0]).attr("cy", c[1]).attr("r", 5)
-                    .attr("class", "chart-interactive").style("fill", COULEUR_V1)
-                    .on("mouseover", function() { if (tooltipPinned) return; tooltip.classed("visible", true).html("<strong>" + nom1 + "</strong><br>" + q1.axes[i].label + " : " + q1.axes[i].score + " /100").style("left", (d3.event.clientX + 15) + "px").style("top", (d3.event.clientY - 10) + "px"); })
-                    .on("mouseout",  function() { if (tooltipPinned) return; tooltip.classed("visible", false); })
-                    .on("click", function() { d3.event.stopPropagation(); if (d3.select(this).classed("chart-selected")) { clearPinnedTooltip(); return; } applyChartSelection(this); showPinnedTooltip("<strong>" + nom1 + "</strong><br>" + q1.axes[i].label + " : " + q1.axes[i].score + " /100", d3.event.clientX, d3.event.clientY); });
-            });
-
-            // Points interactifs ville 2
-            coords2.forEach(function(c, i) {
-                g.append("circle").attr("cx", c[0]).attr("cy", c[1]).attr("r", 5)
-                    .attr("class", "chart-interactive").style("fill", COULEUR_V2)
-                    .on("mouseover", function() { if (tooltipPinned) return; tooltip.classed("visible", true).html("<strong>" + nom2 + "</strong><br>" + q2.axes[i].label + " : " + q2.axes[i].score + " /100").style("left", (d3.event.clientX + 15) + "px").style("top", (d3.event.clientY - 10) + "px"); })
-                    .on("mouseout",  function() { if (tooltipPinned) return; tooltip.classed("visible", false); })
-                    .on("click", function() { d3.event.stopPropagation(); if (d3.select(this).classed("chart-selected")) { clearPinnedTooltip(); return; } applyChartSelection(this); showPinnedTooltip("<strong>" + nom2 + "</strong><br>" + q2.axes[i].label + " : " + q2.axes[i].score + " /100", d3.event.clientX, d3.event.clientY); });
-            });
-
-            // Légende radar
-            g.append("circle").attr("cx", -R + 10).attr("cy", R + 28).attr("r", 5).style("fill", COULEUR_V1);
-            g.append("text").attr("x", -R + 20).attr("y", R + 32).style("fill", "var(--text-0)").style("font-size", "12px").text(nom1);
-            g.append("circle").attr("cx", -R + 10).attr("cy", R + 46).attr("r", 5).style("fill", COULEUR_V2);
-            g.append("text").attr("x", -R + 20).attr("y", R + 50).style("fill", "var(--text-0)").style("font-size", "12px").text(nom2);
-
-            // Bar chart indicateurs qualité de vie
-            dessinerBarChartComparatif(
-                d3.select("#qualite-bar"),
-                [
-                    { label: "Qualité air",    v1: q1.qualiteAir,   v2: q2.qualiteAir },
-                    { label: "Espaces verts",  v1: q1.espacesVerts, v2: q2.espacesVerts },
-                    { label: "Culture",        v1: q1.culture,      v2: q2.culture },
-                    { label: "Sport",          v1: q1.sport,        v2: q2.sport }
-                ],
-                nom1, nom2
-            );
+            var div = d3.select("#qualite-radar");
+            div.selectAll("*").remove();
+            div.html("<p>Qualité de l'air (Index de 0 à 100) : <br>" + v1[colCommune] + " : " + (50 + hashCode(v1.PMUN) % 50) + "/100<br>" + v2[colCommune] + " : " + (50 + hashCode(v2.PMUN) % 50) + "/100</p>");
         }
 
         // =============================================================

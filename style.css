@@ -1357,53 +1357,6 @@ img, svg { vertical-align: middle; }
 }
 
 /* ==========================================================
-   27.2 DATA TABLE (Tableau comparatif démographie)
-   ========================================================== */
-.data-table {
-    border-collapse: collapse;
-    font-size: 0.8125rem;
-}
-
-.data-table th,
-.data-table td {
-    padding: 10px 16px;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-    color: var(--text-1);
-}
-
-.data-table thead th {
-    font-size: 0.6875rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-3);
-    background: var(--bg-2);
-}
-
-.data-table thead th:first-child {
-    border-radius: var(--radius-sm) 0 0 0;
-}
-
-.data-table thead th:last-child {
-    border-radius: 0 var(--radius-sm) 0 0;
-}
-
-.data-table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-.data-table tbody tr:hover td {
-    background: var(--bg-2);
-}
-
-.data-table td:not(:first-child) {
-    font-family: var(--font-mono);
-    font-weight: 500;
-    color: var(--text-0);
-}
-
-/* ==========================================================
    28. PRINT
    ========================================================== */
 @media print {
